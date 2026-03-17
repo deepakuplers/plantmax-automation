@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Plantmax Fleet Ops - Telfer Digital
+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --jcb:#FFD100;--jcb2:#e6bc00;--jcb3:#FFD10022;--jcb4:#FFD10044;
+  --bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--bg4:#222222;--bg5:#2a2a2a;
+  --border:#2a2a2a;--border2:#3a3a3a;--border3:#444;
+  --text:#f0f0f0;--text2:#888;--text3:#555;
+  --green:#22c55e;--green-dim:#22c55e18;
+  --red:#ef4444;--red-dim:#ef444418;
+  --blue:#3b82f6;--blue-dim:#3b82f618;
+  --orange:#f97316;--orange-dim:#f9731618;
+  --radius:5px;--radius2:8px;--radius3:12px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
+.nav{display:flex;align-items:center;gap:2px;background:var(--bg2);border-bottom:2px solid var(--jcb);padding:0 20px;height:54px;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:0;margin-right:28px;}
+.nav-logo-jcb{background:var(--jcb);color:#000;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;padding:4px 10px;letter-spacing:1px;}
+.nav-logo-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;color:var(--text2);padding:4px 8px;letter-spacing:2px;text-transform:uppercase;}
+.nav-btn{padding:6px 14px;border-radius:var(--radius);border:none;background:transparent;color:var(--text2);font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;letter-spacing:.3px;}
+.nav-btn:hover{color:var(--text);}
+.nav-btn.active{color:var(--jcb);border-bottom:2px solid var(--jcb);border-radius:0;}
+.nav-spacer{flex:1;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--jcb);color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;font-family:'Barlow Condensed',sans-serif;}
+.view{display:none;padding:20px;min-height:calc(100vh - 54px);}
+.view.active{display:block;}
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;letter-spacing:.5px;line-height:1;}
+.page-sub{font-size:12px;color:var(--text2);margin-top:4px;letter-spacing:.3px;}
+.btn{padding:8px 18px;border-radius:var(--radius);border:none;cursor:pointer;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;transition:all .15s;letter-spacing:.3px;}
+.btn-primary{background:var(--jcb);color:#000;}
+.btn-primary:hover{background:var(--jcb2);}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--border3);color:var(--text);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:14px 16px;position:relative;overflow:hidden;}
+.sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--jcb);}
+.sum-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:600;}
+.sum-val{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:var(--text);line-height:1;}
+.sum-val.yellow{color:var(--jcb);}
+.sum-val.green{color:var(--green);}
+.kanban-wrap{overflow-x:auto;padding-bottom:16px;}
+.kanban-wrap::-webkit-scrollbar{height:5px;}
+.kanban-wrap::-webkit-scrollbar-track{background:var(--bg2);}
+.kanban-wrap::-webkit-scrollbar-thumb{background:var(--jcb);border-radius:2px;}
+.kanban{display:flex;gap:10px;min-width:max-content;}
+.col{width:195px;background:var(--bg2);border-radius:var(--radius2);border:1px solid var(--border);display:flex;flex-direction:column;transition:border-color .2s;}
+.col.drag-over{border-color:var(--jcb);background:#1a1800;}
+.col-hdr{padding:10px 12px 9px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.col-stripe{width:3px;height:14px;border-radius:2px;flex-shrink:0;}
+.col-name{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.col-count{font-size:10px;background:var(--bg4);color:var(--text2);padding:2px 6px;border-radius:10px;font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+.col-body{padding:8px;display:flex;flex-direction:column;gap:6px;flex:1;min-height:90px;}
+.mcard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);cursor:grab;transition:all .18s;position:relative;overflow:hidden;user-select:none;}
+.mcard:hover{border-color:var(--border3);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.4);}
+.mcard.dragging{opacity:.4;cursor:grabbing;transform:rotate(2deg);}
+.mcard-img{width:100%;height:72px;object-fit:cover;display:block;}
+.mcard-img-placeholder{width:100%;height:60px;display:flex;align-items:center;justify-content:center;}
+.type-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;}
+.mcard-body{padding:8px 10px 10px;}
+.mcard-sku{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--jcb);font-weight:500;margin-bottom:3px;}
+.mcard-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.25;margin-bottom:3px;}
+.mcard-type{font-size:11px;color:var(--text2);}
+.mcard-footer{display:flex;align-items:center;justify-content:space-between;margin-top:7px;padding-top:7px;border-top:1px solid var(--border);}
+.mcard-cost{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);}
+.mcard-jobs{font-size:10px;color:var(--text3);}
+.mcard-open{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);border:none;color:var(--jcb);cursor:pointer;border-radius:3px;padding:2px 6px;font-size:10px;font-weight:700;opacity:0;transition:opacity .15s;}
+.mcard:hover .mcard-open{opacity:1;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text2);cursor:pointer;font-size:13px;margin-bottom:18px;font-weight:500;transition:color .15s;background:none;border:none;}
+.back-btn:hover{color:var(--jcb);}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:16px;}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.8px;margin-bottom:14px;color:var(--text2);text-transform:uppercase;}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat-box{background:var(--bg3);border-radius:var(--radius);padding:12px;border:1px solid var(--border);}
+.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;font-weight:600;}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--jcb);}
+.stat-val.green{color:var(--green);}
+.stat-val.white{color:var(--text);}
+.jtable{width:100%;border-collapse:collapse;}
+.jtable th{text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);white-space:nowrap;}
+.jtable td{padding:8px 12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.jtable tr:last-child td{border-bottom:none;}
+.jtable tbody tr:hover td{background:var(--bg3);}
+.status-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap;}
+.pill-todo{background:var(--bg4);color:var(--text2);}
+.pill-progress{background:var(--orange-dim);color:var(--orange);}
+.pill-done{background:var(--green-dim);color:var(--green);}
+.pill-repair{background:var(--red-dim);color:var(--red);}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:11px;background:var(--bg4);color:var(--text2);font-weight:500;}
+.cl-header{display:grid;grid-template-columns:1fr 110px 150px 80px;gap:8px;padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--border);}
+.cl-col-hdr{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.cl-row{display:grid;grid-template-columns:1fr 110px 150px 80px;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);transition:background .15s;}
+.cl-row:hover{background:var(--bg3);}
+.cl-row:last-child{border-bottom:none;}
+.cl-name{font-size:13px;color:var(--text);font-weight:500;}
+.cl-toggle{display:flex;gap:4px;}
+.tog-btn{padding:4px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;}
+.tog-btn.ok-active{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.tog-btn.bad-active{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.cl-select{padding:4px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;font-family:'Barlow',sans-serif;width:100%;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-top:2px solid var(--jcb);border-radius:var(--radius2);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;}
+.modal.wide{max-width:680px;}
+.modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:.5px;}
+.modal-body{padding:20px;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.form-input,.form-select{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-size:13px;font-family:'Barlow',sans-serif;transition:border-color .15s;}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--jcb);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sku-preview{background:var(--jcb3);border:1px solid var(--jcb);border-radius:var(--radius);padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--jcb);font-weight:500;}
+.img-upload-area{border:2px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--bg3);}
+.img-upload-area:hover{border-color:var(--jcb);background:var(--jcb3);}
+.img-upload-area.has-img{border-style:solid;border-color:var(--jcb);padding:0;overflow:hidden;}
+.img-preview-el{width:100%;height:150px;object-fit:cover;display:block;}
+.img-upload-icon{width:40px;height:40px;background:var(--bg4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;border:1px solid var(--border2);}
+.img-upload-icon svg{width:20px;height:20px;stroke:var(--text3);}
+.img-upload-txt{font-size:13px;color:var(--text2);}
+.img-upload-sub{font-size:11px;color:var(--text3);margin-top:3px;}
+.img-change-btn{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.85);border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:var(--radius);font-size:11px;cursor:pointer;font-family:'Barlow',sans-serif;}
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.filter-select{padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;font-family:'Barlow',sans-serif;}
+.notif{position:fixed;bottom:20px;right:20px;background:var(--jcb);color:#000;padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:700;z-index:999;transform:translateY(60px);opacity:0;transition:all .3s;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;pointer-events:none;}
+.notif.show{transform:translateY(0);opacity:1;}
+.det-hero{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.det-img-box{width:200px;height:140px;border-radius:var(--radius2);border:1px solid var(--border);flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.det-img-box img{width:200px;height:140px;object-fit:cover;}
+.det-info{flex:1;min-width:200px;}
+.badge-type{display:inline-block;padding:3px 10px;border-radius:3px;font-size:11px;font-weight:600;background:var(--jcb3);color:var(--jcb);border:1px solid var(--jcb);margin-bottom:8px;}
+.type-indicator{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-jcb">PMX</div>
+    <div class="nav-logo-sub">Plantmax</div>
+  </div>
+  <button class="nav-btn active" id="nav-dashboard" onclick="showView('dashboard')">Pipeline</button>
+  <button class="nav-btn" id="nav-workshop" onclick="showView('workshop')">Workshop</button>
+  <button class="nav-btn" id="nav-stock" onclick="showView('stock')">Stock Registry</button>
+  <div class="nav-spacer"></div>
+  <div class="nav-right">
+    <div class="nav-user">
+      <div class="avatar">PMX</div>
+      <span style="font-size:13px;color:var(--text2);">Plantmax</span>
+    </div>
+  </div>
+</div>
+
+<div class="view active" id="view-dashboard">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Machine Pipeline</div>
+      <div class="page-sub" id="machine-count-label">Loading...</div>
+    </div>
+    <button class="btn btn-primary" onclick="openAddMachine()">+ Add Machine</button>
+  </div>
+  <div class="summary-row">
+    <div class="sum-card"><div class="sum-label">Total Machines</div><div class="sum-val yellow" id="s-total">0</div></div>
+    <div class="sum-card"><div class="sum-label">In Workshop</div><div class="sum-val" id="s-ws">0</div></div>
+    <div class="sum-card"><div class="sum-label">Total Parts Cost</div><div class="sum-val green" id="s-parts">--</div></div>
+    <div class="sum-card"><div class="sum-label">Total Labour Cost</div><div class="sum-val green" id="s-labour">--</div></div>
+  </div>
+  <div class="kanban-wrap"><div class="kanban" id="kanban-board"></div></div>
+</div>
+
+<div class="view" id="view-machine">
+  <button class="back-btn" onclick="showView('dashboard')">&larr; Back to Pipeline</button>
+  <div id="machine-detail-content"></div>
+</div>
+
+<div class="view" id="view-workshop">
+  <div class="page-hdr">
+    <div><div class="page-title">Workshop Jobs</div><div class="page-sub">All jobs across all machines &mdash; rate &pound;45/hr</div></div>
+  </div>
+  <div class="filter-row">
+    <span style="font-size:12px;color:var(--text2);font-weight:500;">Filter:</span>
+    <select class="filter-select" id="filter-assignee" onchange="renderWorkshop()">
+      <option value="">All Assignees</option>
+      <option>Nick Newton-Howes</option><option>Mike</option><option>Matthew</option>
+    </select>
+    <select class="filter-select" id="filter-status" onchange="renderWorkshop()">
+      <option value="">All Status</option>
+      <option>To Do</option><option>In Progress</option><option>Done</option><option>Repair Needed</option>
+    </select>
+    <select class="filter-select" id="filter-type" onchange="renderWorkshop()">
+      <option value="">All Types</option>
+      <option>Checklist</option><option>Service</option><option>Cab Clean</option><option>Repair</option><option>Paint</option>
+    </select>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="jtable">
+      <thead><tr><th>SKU</th><th>Brand / Model</th><th>Job</th><th>Type</th><th>Assignee</th><th>Parts</th><th>Hours</th><th>Labour</th><th>Status</th></tr></thead>
+      <tbody id="workshop-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="view" id="view-stock">
+  <div class="page-hdr">
+    <div><div class="page-title">Stock Registry</div><div class="page-sub">Auto-assigned on machine creation</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="jtable">
+      <thead><tr><th>Stock Number</th><th>Status</th><th>Assigned To</th><th>Date</th></tr></thead>
+      <tbody id="stock-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADD MACHINE MODAL -->
+<div class="modal-overlay" id="modal-add" style="display:none;">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div><div class="modal-title">Add New Machine</div><div style="font-size:12px;color:var(--text2);margin-top:2px;">Stock number auto-assigned from registry</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-add')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Machine Image</label>
+        <div class="img-upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+          <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleImageUpload(event)"/>
+          <img id="img-preview-el" class="img-preview-el" style="display:none;"/>
+          <div id="upload-placeholder">
+            <div class="img-upload-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div class="img-upload-txt">Click to upload image</div>
+            <div class="img-upload-sub">JPG, PNG, WEBP supported</div>
+          </div>
+          <button class="img-change-btn" id="change-img-btn" style="display:none;" onclick="event.stopPropagation();document.getElementById('file-input').click()">Change photo</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stock Number (Auto-assigned)</label>
+        <div class="sku-preview" id="next-sku">--</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Brand</label>
+          <select class="form-select" id="new-brand">
+            <option>JCB</option><option>Kubota</option><option>Takeuchi</option><option>Manitou</option><option>CAT</option><option>Volvo</option><option>Terex</option><option>New Holland</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Machine Type</label>
+          <select class="form-select" id="new-type">
+            <option>Excavator</option><option>Mini Digger</option><option>Backhoe</option><option>Dumper</option><option>Telehandler</option><option>Roller</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Model</label>
+          <input class="form-input" id="new-model" placeholder="e.g. U27-4"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Year</label>
+          <input class="form-input" type="number" id="new-year" placeholder="2019"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Purchase Price (&pound;)</label>
+        <input class="form-input" type="number" id="new-price" placeholder="15000"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add')">Cancel</button>
+      <button class="btn btn-primary" onclick="addMachine()">Create Machine</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST MODAL -->
+<div class="modal-overlay" id="modal-checklist" style="display:none;">
+  <div class="modal wide">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title" id="cl-modal-title">Inspection Checklist</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px;" id="cl-modal-sub"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-checklist')">&#x2715;</button>
+    </div>
+    <div>
+      <div class="cl-header">
+        <div class="cl-col-hdr">Checkpoint</div>
+        <div class="cl-col-hdr">Result</div>
+        <div class="cl-col-hdr">Assign Repair To</div>
+        <div class="cl-col-hdr">Flag</div>
+      </div>
+      <div id="cl-modal-body"></div>
+    </div>
+    <div class="modal-footer">
+      <div style="flex:1;font-size:12px;color:var(--text2);" id="cl-repair-count"></div>
+      <button class="btn btn-ghost" onclick="closeModal('modal-checklist')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitChecklist()">Save &amp; Auto-Create Repair Jobs</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOG HOURS MODAL -->
+<div class="modal-overlay" id="modal-hours" style="display:none;">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-hdr">
+      <div class="modal-title">Log Work</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-hours')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px;padding:8px 12px;background:var(--bg3);border-radius:var(--radius);" id="log-job-name"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Hours Spent</label><input class="form-input" type="number" id="log-hours" step="0.5" placeholder="1.5"/></div>
+        <div class="form-group"><label class="form-label">Parts Cost (&pound;)</label><input class="form-input" type="number" id="log-parts" placeholder="0"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="log-notes" placeholder="Optional..."/></div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="log-status">
+          <option>To Do</option><option>In Progress</option><option>Done</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-hours')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHours()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+const RATE = 45;
+const STAGES = ['Agreed Purchase','Inbound Transport','Consignment Stock','Assessment','Not Yet For Sale','WIP / Live On Site','Sold','Delivery Schedule','Sale Completed','Export Only','Done'];
+const STAGE_COLORS = ['#3b82f6','#f97316','#a855f7','#FFD100','#ef4444','#22c55e','#06b6d4','#f59e0b','#10b981','#ec4899','#6b7280'];
+const TYPE_COLORS  = {'Excavator':'#f97316','Mini Digger':'#ef4444','Backhoe':'#f59e0b','Dumper':'#a855f7','Telehandler':'#3b82f6','Roller':'#6b7280'};
+const TYPE_SHORT   = {'Excavator':'EXC','Mini Digger':'MDG','Backhoe':'BCK','Dumper':'DMP','Telehandler':'TLH','Roller':'RLR'};
+
+const CHECKLISTS = {
+  'Excavator':['Tracks - condition & tension','Undercarriage wear','Sprockets & rollers','Upper & lower hydraulic hoses','Hydraulic cylinders - no leaks','Engine oil level','Coolant level','Air filter condition','Slew ring & bearing','Cab condition & glass','Lights & electrics','Bucket / attachment pins','Final drives'],
+  'Mini Digger':['Tracks - condition','Hydraulic hoses','Engine oil level','Coolant level','Air filter','Cab condition','Blade / bucket','Electrics & lights','Rubber track tension','Horn & safety devices'],
+  'Backhoe':['Front loader bucket & pins','Rear bucket & dipper arm','Stabiliser legs & pads','Hydraulic hoses (all)','Engine oil level','Coolant level','Transmission fluid','Cab condition & glass','Lights & electrics','4WD / transmission','Steering operation','Brake test','Tyres - condition & pressure'],
+  'Dumper':['Skip / drum - condition','Tipping mechanism - operation','Tyres - condition & pressure','Brake system test','Engine oil level','Coolant level','Fuel system - no leaks','Electrics & lights','Seat & controls','Handbrake operation','Horn working','ROPS / safety frame'],
+  'Telehandler':['Boom - condition & operation','Forks / attachment - secure','All hydraulic hoses','Tyres - condition & pressure','Engine oil level','Coolant level','Cab condition & glass','Load chart present & legible','Safety interlocks working','Lights & beacons','Outriggers - if fitted','Seatbelt & restraints'],
+  'Roller':['Drum condition - no damage','Vibration system working','Steering - articulation','Engine oil level','Coolant level','Hydraulic hoses','Water sprinkler system','Seat & ROPS','Lights & electrics','Scraper blades'],
+};
+
+let uploadedImageData = null;
+let machines = [
+  {id:'m1',sku:'PMX-2399',brand:'Kubota',model:'U27-4',type:'Mini Digger',stage:'Agreed Purchase',price:18500,year:2019,img:null},
+  {id:'m2',sku:'PMX-2421',brand:'Takeuchi',model:'TB290',type:'Excavator',stage:'Inbound Transport',price:32000,year:2017,img:null},
+  {id:'m3',sku:'PMX-2194',brand:'Kubota',model:'U20-3',type:'Mini Digger',stage:'Consignment Stock',price:12000,year:2019,img:null},
+  {id:'m4',sku:'PMX-2283',brand:'JCB',model:'505Z-2',type:'Telehandler',stage:'Assessment',price:28000,year:2020,img:null},
+  {id:'m5',sku:'PMX-2330',brand:'CAT',model:'305.5',type:'Excavator',stage:'Assessment',price:41000,year:2020,img:null},
+  {id:'m6',sku:'PMX-2376',brand:'Terex',model:'HR32',type:'Excavator',stage:'Sold',price:22000,year:2018,img:null},
+  {id:'m7',sku:'PMX-2345',brand:'Kubota',model:'U27-4',type:'Mini Digger',stage:'WIP / Live On Site',price:19500,year:2021,img:null},
+];
+let jobs = [
+  {id:'j1',machineId:'m1',name:'Run through checklist',type:'Checklist',status:'To Do',assignee:'Nick Newton-Howes',parts:0,hours:0,notes:''},
+  {id:'j2',machineId:'m4',name:'Run through checklist',type:'Checklist',status:'To Do',assignee:'Nick Newton-Howes',parts:0,hours:0,notes:''},
+  {id:'j3',machineId:'m5',name:'Run through checklist',type:'Checklist',status:'In Progress',assignee:'Nick Newton-Howes',parts:0,hours:2,notes:''},
+  {id:'j4',machineId:'m6',name:'Service the machine',type:'Service',status:'Done',assignee:'Nick Newton-Howes',parts:47,hours:1.5,notes:'Service kit fitted'},
+  {id:'j5',machineId:'m6',name:'Cab clean',type:'Cab Clean',status:'Done',assignee:'Mike',parts:0,hours:1,notes:''},
+  {id:'j6',machineId:'m6',name:'[REPAIR] LH mirror',type:'Repair',status:'Done',assignee:'Matthew',parts:35,hours:0.5,notes:'Mirror replaced'},
+  {id:'j7',machineId:'m6',name:'[REPAIR] Tracks - new fitted',type:'Repair',status:'Done',assignee:'Nick Newton-Howes',parts:600,hours:3,notes:'Both tracks replaced'},
+  {id:'j8',machineId:'m7',name:'Service the machine',type:'Service',status:'In Progress',assignee:'Nick Newton-Howes',parts:47,hours:1,notes:''},
+  {id:'j9',machineId:'m7',name:'Cab clean',type:'Cab Clean',status:'To Do',assignee:'Mike',parts:0,hours:0,notes:''},
+];
+let stockNumbers = [
+  {num:'PMX-2399',status:'Assigned',machine:'Kubota U27-4',date:'10/01/2024'},
+  {num:'PMX-2421',status:'Assigned',machine:'Takeuchi TB290',date:'12/01/2024'},
+  {num:'PMX-2194',status:'Assigned',machine:'Kubota U20-3',date:'15/01/2024'},
+  {num:'PMX-2283',status:'Assigned',machine:'JCB 505Z-2',date:'18/01/2024'},
+  {num:'PMX-2330',status:'Assigned',machine:'CAT 305.5',date:'20/01/2024'},
+  {num:'PMX-2376',status:'Assigned',machine:'Terex HR32',date:'22/01/2024'},
+  {num:'PMX-2345',status:'Assigned',machine:'Kubota U27-4',date:'25/01/2024'},
+  {num:'PMX-2450',status:'Available',machine:'-',date:'-'},
+  {num:'PMX-2451',status:'Available',machine:'-',date:'-'},
+  {num:'PMX-2452',status:'Available',machine:'-',date:'-'},
+  {num:'PMX-2453',status:'Available',machine:'-',date:'-'},
+  {num:'PMX-2454',status:'Available',machine:'-',date:'-'},
+];
+
+let currentMachineId=null, currentChecklistMachineId=null, checklistState={}, logJobId=null, dragMachineId=null;
+
+const getMachine = id => machines.find(m=>m.id===id);
+const getMachineJobs = id => jobs.filter(j=>j.machineId===id);
+const getPartsCost = id => getMachineJobs(id).reduce((s,j)=>s+j.parts,0);
+const getLabourCost = id => getMachineJobs(id).reduce((s,j)=>s+(j.hours*RATE),0);
+const getNextSKU = () => { const a=stockNumbers.find(s=>s.status==='Available'); return a?a.num:'--'; };
+const fmtGBP = n => '&pound;' + parseFloat(n||0).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmtGBPStr = n => '\u00A3' + parseFloat(n||0).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:0});
+const today = () => new Date().toLocaleDateString('en-GB');
+
+function typeDot(type,size){
+  const c=TYPE_COLORS[type]||'#888', s=TYPE_SHORT[type]||'MCH';
+  const bg=c+'22', border=c;
+  return `<div class="type-indicator" style="background:${bg};border:1px solid ${border};color:${c};width:${size}px;height:${size}px;">${s}</div>`;
+}
+
+function showView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const nb=document.getElementById('nav-'+v); if(nb) nb.classList.add('active');
+  if(v==='dashboard') renderDashboard();
+  if(v==='workshop') renderWorkshop();
+  if(v==='stock') renderStock();
+}
+function showRaw(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+}
+
+// DRAG & DROP
+function onDragStart(e,id){dragMachineId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>{const el=document.getElementById('mc-'+id);if(el)el.classList.add('dragging');},0);}
+function onDragEnd(){if(dragMachineId){const el=document.getElementById('mc-'+dragMachineId);if(el)el.classList.remove('dragging');}document.querySelectorAll('.col').forEach(c=>c.classList.remove('drag-over'));}
+function onDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';}
+function onDragEnter(e,idx){document.getElementById('col-'+idx).classList.add('drag-over');}
+function onDragLeave(e,idx){const col=document.getElementById('col-'+idx);if(!col.contains(e.relatedTarget))col.classList.remove('drag-over');}
+function onDrop(e,stage,idx){
+  e.preventDefault();
+  document.querySelectorAll('.col').forEach(c=>c.classList.remove('drag-over'));
+  if(!dragMachineId)return;
+  const m=getMachine(dragMachineId);
+  if(m&&m.stage!==stage){m.stage=stage;handleStageChange(m.id,stage);}
+  dragMachineId=null;renderDashboard();
+}
+
+function handleStageChange(machineId,newStage){
+  if(newStage==='Assessment'&&!jobs.find(j=>j.machineId===machineId&&j.name==='Run through checklist')){
+    jobs.push({id:'j'+Date.now(),machineId,name:'Run through checklist',type:'Checklist',status:'To Do',assignee:'Nick Newton-Howes',parts:0,hours:0,notes:''});
+    notify('Checklist job auto-created for Assessment');
+  }
+  if(newStage==='Sold'){
+    ['Service the machine','Cab clean','Paint refresh'].forEach((name,i)=>{
+      if(!jobs.find(j=>j.machineId===machineId&&j.name===name))
+        jobs.push({id:'j'+Date.now()+i,machineId,name,type:name==='Service the machine'?'Service':name==='Cab clean'?'Cab Clean':'Paint',status:'To Do',assignee:'Nick Newton-Howes',parts:0,hours:0,notes:''});
+    });
+    notify('Service, Cab Clean & Paint jobs auto-created');
+  }
+}
+
+function renderDashboard(){
+  document.getElementById('s-total').textContent=machines.length;
+  document.getElementById('s-ws').textContent=machines.filter(m=>['Assessment','WIP / Live On Site'].includes(m.stage)).length;
+  document.getElementById('s-parts').innerHTML=fmtGBP(machines.reduce((s,m)=>s+getPartsCost(m.id),0));
+  document.getElementById('s-labour').innerHTML=fmtGBP(machines.reduce((s,m)=>s+getLabourCost(m.id),0));
+  document.getElementById('machine-count-label').textContent=machines.length+' machines \u00B7 drag cards between columns to move stages';
+
+  document.getElementById('kanban-board').innerHTML=STAGES.map((stage,i)=>{
+    const sm=machines.filter(m=>m.stage===stage);
+    const cards=sm.map(m=>{
+      const pc=getPartsCost(m.id),lc=getLabourCost(m.id);
+      const imgHtml=m.img
+        ?`<img class="mcard-img" src="${m.img}" draggable="false"/>`
+        :`<div class="mcard-img-placeholder" style="background:${TYPE_COLORS[m.type]||'#333'}18;">${typeDot(m.type,32)}</div>`;
+      return `<div class="mcard" id="mc-${m.id}" draggable="true" ondragstart="onDragStart(event,'${m.id}')" ondragend="onDragEnd()">
+        <button class="mcard-open" onclick="event.stopPropagation();openMachine('${m.id}')">OPEN &rarr;</button>
+        ${imgHtml}
+        <div class="mcard-body" onclick="openMachine('${m.id}')">
+          <div class="mcard-sku">${m.sku}</div>
+          <div class="mcard-name">${m.brand} ${m.model}</div>
+          <div class="mcard-type">${m.type} &middot; ${m.year}</div>
+          <div class="mcard-footer">
+            <div class="mcard-cost">${fmtGBPStr(pc+lc)}</div>
+            <div class="mcard-jobs">${getMachineJobs(m.id).length} jobs</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="col" id="col-${i}" ondragover="onDragOver(event)" ondragenter="onDragEnter(event,${i})" ondragleave="onDragLeave(event,${i})" ondrop="onDrop(event,'${stage}',${i})">
+      <div class="col-hdr">
+        <div class="col-stripe" style="background:${STAGE_COLORS[i]}"></div>
+        <div class="col-name" style="color:${STAGE_COLORS[i]}">${stage}</div>
+        <div class="col-count">${sm.length}</div>
+      </div>
+      <div class="col-body">${cards||'<div style="font-size:11px;color:var(--text3);padding:12px;text-align:center;">Drop here</div>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function openMachine(id){currentMachineId=id;renderMachineDetail();showRaw('machine');}
+
+function renderMachineDetail(){
+  const m=getMachine(currentMachineId);
+  const mj=getMachineJobs(m.id);
+  const pc=getPartsCost(m.id),lc=getLabourCost(m.id);
+  const stageOpts=STAGES.map(s=>`<option${m.stage===s?' selected':''}>${s}</option>`).join('');
+  const imgEl=m.img
+    ?`<div class="det-img-box"><img src="${m.img}"/></div>`
+    :`<div class="det-img-box" style="background:${TYPE_COLORS[m.type]||'#333'}18;">${typeDot(m.type,52)}</div>`;
+
+  const jobRows=mj.map(j=>`<tr>
+    <td>${j.name}${j.type==='Repair'?` <span class="status-pill pill-repair" style="font-size:10px;padding:1px 6px;">repair</span>`:''}</td>
+    <td><span class="tag">${j.type}</span></td>
+    <td style="font-size:12px;color:var(--text2)">${j.assignee||'-'}</td>
+    <td><span class="mono">${fmtGBPStr(j.parts)}</span></td>
+    <td><span class="mono">${j.hours}h</span></td>
+    <td><span class="mono" style="color:var(--green)">${fmtGBPStr(j.hours*RATE)}</span></td>
+    <td><span class="status-pill ${j.status==='Done'?'pill-done':j.status==='Repair Needed'?'pill-repair':j.status==='In Progress'?'pill-progress':'pill-todo'}">${j.status}</span></td>
+    <td><button class="btn btn-ghost btn-sm" onclick="openLogHours('${j.id}')">Log</button></td>
+  </tr>`).join('');
+
+  document.getElementById('machine-detail-content').innerHTML=`
+    <div class="det-hero">
+      ${imgEl}
+      <div class="det-info">
+        <div class="badge-type">${m.type}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;line-height:1;">${m.brand} ${m.model}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--jcb);margin:6px 0 8px;">${m.sku}</div>
+        <div style="font-size:13px;color:var(--text2);">${m.year} &middot; ${fmtGBPStr(m.price)} purchase price</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:var(--text2);">Stage:</span>
+          <select class="filter-select" style="font-size:13px;" onchange="changeStage('${m.id}',this.value)">${stageOpts}</select>
+          <button class="btn btn-ghost btn-sm" onclick="openChecklist('${m.id}')">Run Checklist (${(CHECKLISTS[m.type]||CHECKLISTS['Excavator']).length} pts)</button>
+        </div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-label">Parts Cost</div><div class="stat-val">${fmtGBPStr(pc)}</div></div>
+      <div class="stat-box"><div class="stat-label">Labour Cost</div><div class="stat-val">${fmtGBPStr(lc)}</div></div>
+      <div class="stat-box"><div class="stat-label">Total Cost</div><div class="stat-val green">${fmtGBPStr(pc+lc)}</div></div>
+      <div class="stat-box"><div class="stat-label">Jobs</div><div class="stat-val white">${mj.length}</div></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
+        <div class="card-title" style="margin:0;">Workshop Jobs</div>
+      </div>
+      <table class="jtable">
+        <thead><tr><th>Job</th><th>Type</th><th>Assignee</th><th>Parts</th><th>Hours</th><th>Labour</th><th>Status</th><th></th></tr></thead>
+        <tbody>${jobRows||'<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">No jobs yet</td></tr>'}</tbody>
+      </table>
+    </div>`;
+}
+
+function changeStage(machineId,newStage){getMachine(machineId).stage=newStage;handleStageChange(machineId,newStage);renderMachineDetail();}
+
+function openChecklist(machineId){
+  currentChecklistMachineId=machineId;
+  const m=getMachine(machineId);
+  const items=CHECKLISTS[m.type]||CHECKLISTS['Excavator'];
+  document.getElementById('cl-modal-title').textContent=m.type+' Inspection \u2014 '+items.length+' checkpoints';
+  document.getElementById('cl-modal-sub').textContent=m.sku+' \u00B7 '+m.brand+' '+m.model;
+  checklistState={};
+  items.forEach(item=>{checklistState[item]={result:null,assignee:''};});
+  document.getElementById('cl-repair-count').textContent='';
+  document.getElementById('cl-modal-body').innerHTML=items.map((item,idx)=>{
+    const key='ci'+idx;
+    return `<div class="cl-row">
+      <div class="cl-name">${item}</div>
+      <div class="cl-toggle">
+        <button class="tog-btn" id="ok-${key}" onclick="setResult('${item}','${key}','ok')">OK</button>
+        <button class="tog-btn" id="bad-${key}" onclick="setResult('${item}','${key}','bad')">FAIL</button>
+      </div>
+      <select class="cl-select" onchange="checklistState['${item}'].assignee=this.value;updateRepairCount()">
+        <option value="">-- Pick staff --</option>
+        <option>Nick Newton-Howes</option><option>Mike</option><option>Matthew</option>
+      </select>
+      <div id="st-${key}"><span style="font-size:11px;color:var(--text3)">--</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('modal-checklist').style.display='flex';
+}
+
+function setResult(item,key,result){
+  checklistState[item].result=result;
+  document.getElementById('ok-'+key).className='tog-btn'+(result==='ok'?' ok-active':'');
+  document.getElementById('bad-'+key).className='tog-btn'+(result==='bad'?' bad-active':'');
+  const st=document.getElementById('st-'+key);
+  if(result==='bad') st.innerHTML='<span class="status-pill pill-repair" style="font-size:10px;">REPAIR</span>';
+  else if(result==='ok') st.innerHTML='<span class="status-pill pill-done" style="font-size:10px;">PASS</span>';
+  updateRepairCount();
+}
+
+function updateRepairCount(){
+  const f=Object.values(checklistState).filter(s=>s.result==='bad').length;
+  document.getElementById('cl-repair-count').textContent=f>0?f+' repair job'+(f!==1?'s':'')+' will be auto-created':'';
+}
+
+function submitChecklist(){
+  let created=0;
+  Object.entries(checklistState).forEach(([item,state])=>{
+    if(state.result==='bad'){
+      const name='[REPAIR] '+item;
+      if(!jobs.find(j=>j.machineId===currentChecklistMachineId&&j.name===name)){
+        jobs.push({id:'j'+Date.now()+Math.random(),machineId:currentChecklistMachineId,name,type:'Repair',status:'Repair Needed',assignee:state.assignee||'Nick Newton-Howes',parts:0,hours:0,notes:'Flagged during inspection'});
+        created++;
+      }
+    }
+  });
+  closeModal('modal-checklist');
+  notify(created+' repair job'+(created!==1?'s':'')+' auto-created');
+  if(currentMachineId===currentChecklistMachineId) renderMachineDetail();
+}
+
+function openLogHours(jobId){
+  logJobId=jobId;
+  const j=jobs.find(x=>x.id===jobId);
+  document.getElementById('log-job-name').textContent=j.name;
+  document.getElementById('log-hours').value=j.hours||'';
+  document.getElementById('log-parts').value=j.parts||'';
+  document.getElementById('log-notes').value=j.notes||'';
+  document.getElementById('log-status').value=j.status||'To Do';
+  document.getElementById('modal-hours').style.display='flex';
+}
+
+function saveHours(){
+  const j=jobs.find(x=>x.id===logJobId);
+  j.hours=parseFloat(document.getElementById('log-hours').value)||0;
+  j.parts=parseFloat(document.getElementById('log-parts').value)||0;
+  j.notes=document.getElementById('log-notes').value;
+  j.status=document.getElementById('log-status').value;
+  closeModal('modal-hours');notify('Work logged \u2014 costs updated');renderMachineDetail();
+}
+
+function handleImageUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    uploadedImageData=ev.target.result;
+    const preview=document.getElementById('img-preview-el');
+    preview.src=uploadedImageData;preview.style.display='block';
+    document.getElementById('upload-placeholder').style.display='none';
+    document.getElementById('change-img-btn').style.display='block';
+    document.getElementById('upload-area').classList.add('has-img');
+  };
+  r.readAsDataURL(file);
+}
+
+function openAddMachine(){
+  uploadedImageData=null;
+  document.getElementById('next-sku').textContent=getNextSKU();
+  document.getElementById('img-preview-el').style.display='none';
+  document.getElementById('upload-placeholder').style.display='block';
+  document.getElementById('change-img-btn').style.display='none';
+  document.getElementById('upload-area').classList.remove('has-img');
+  ['new-model','new-price','new-year'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('modal-add').style.display='flex';
+}
+
+function addMachine(){
+  const sku=getNextSKU();if(sku==='--'){notify('No stock numbers available');return;}
+  const brand=document.getElementById('new-brand').value;
+  const type=document.getElementById('new-type').value;
+  const model=document.getElementById('new-model').value||'Unknown';
+  const price=parseInt(document.getElementById('new-price').value)||0;
+  const year=parseInt(document.getElementById('new-year').value)||2020;
+  machines.unshift({id:'m'+Date.now(),sku,brand,model,type,stage:'Agreed Purchase',price,year,img:uploadedImageData});
+  const sn=stockNumbers.find(s=>s.num===sku);
+  if(sn){sn.status='Assigned';sn.machine=brand+' '+model;sn.date=today();}
+  closeModal('modal-add');notify(brand+' '+model+' created \u00B7 '+sku+' assigned');renderDashboard();
+}
+
+function renderWorkshop(){
+  const fa=document.getElementById('filter-assignee').value;
+  const fs=document.getElementById('filter-status').value;
+  const ft=document.getElementById('filter-type').value;
+  const filtered=jobs.filter(j=>(!fa||j.assignee===fa)&&(!fs||j.status===fs)&&(!ft||j.type===ft));
+  document.getElementById('workshop-tbody').innerHTML=filtered.map(j=>{
+    const m=getMachine(j.machineId)||{};
+    return `<tr>
+      <td><span class="mono" style="color:var(--jcb)">${m.sku||'-'}</span></td>
+      <td><span style="font-size:12px;">${m.brand||''} <strong>${m.model||''}</strong></span></td>
+      <td style="max-width:180px;font-size:13px;">${j.name}</td>
+      <td><span class="tag">${j.type}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${j.assignee||'-'}</td>
+      <td><span class="mono">${fmtGBPStr(j.parts)}</span></td>
+      <td><span class="mono">${j.hours}h</span></td>
+      <td><span class="mono" style="color:var(--green)">${fmtGBPStr(j.hours*RATE)}</span></td>
+      <td><span class="status-pill ${j.status==='Done'?'pill-done':j.status==='Repair Needed'?'pill-repair':j.status==='In Progress'?'pill-progress':'pill-todo'}">${j.status}</span></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3)">No jobs match filter</td></tr>';
+}
+
+function renderStock(){
+  document.getElementById('stock-tbody').innerHTML=stockNumbers.map(s=>`<tr>
+    <td><span class="mono" style="color:var(--jcb)">${s.num}</span></td>
+    <td><span class="status-pill ${s.status==='Available'?'pill-done':'pill-todo'}">${s.status}</span></td>
+    <td style="font-size:13px;">${s.machine}</td>
+    <td style="font-size:12px;color:var(--text2)">${s.date}</td>
+  </tr>`).join('');
+}
+
+function closeModal(id){document.getElementById(id).style.display='none';}
+function notify(msg){
+  const el=document.getElementById('notif');
+  el.textContent='\u2713 '+msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+renderDashboard();renderWorkshop();renderStock();
+</script>
+</body>
+</html>
